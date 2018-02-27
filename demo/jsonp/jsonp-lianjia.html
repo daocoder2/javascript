@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>jsonp-h5</title>
+    <link rel="stylesheet" type="text/css" href="jsonp-baidu.css">
+</head>
+<body>
+<div class="box" id="box">
+    <div class="con">
+        <input class="input" id="search">
+        <a target="_blank" id="btn" href="javascript:void 0;" class="search"></a>
+    </div>
+    <ul class="list" id="list"></ul>
+</div>
+<script>
+    function loadScript(url){
+        loadScript.mark='load';
+        var script=document.createElement("script");
+        script.type="text/javascript";
+        script.src=url;
+        document.body.appendChild(script);
+    }
+    // data为返回的json对象
+    function testCb(data){
+        if(data){
+            console.log(data);
+            if(data){
+                var arr=data.data;
+                var html='';
+                for(var i=0,len=arr.length; i<len; i++){
+                    html+="<li class='in'><a href='#' target='_blank' style='display:block'>" + arr[i]['id']+'-'+arr[i]['name'] + "</a></li>"
+                }
+                list.innerHTML=html;
+                console.log(html);
+                list.style.display='block';
+            }
+        }
+    }
+    var search=document.getElementById('search');
+    var btn=document.getElementById('btn');
+    var list=document.getElementById('list');
+    btn.onclick=function(e){
+        var citycode=search.value;
+        loadScript("https://ajax.lianjia.com/ajax/mapsearch/area/district?city_id=" +citycode+ "&&callback=testCb");
+    };
+    search.onkeyup=function(e){
+        e=e || event;
+        if(e.keyCode=='13'){
+            var citycode=this.value;
+            if(this.value){
+                loadScript("https://ajax.lianjia.com/ajax/mapsearch/area/district?city_id=" +citycode+ "&&callback=testCb");
+            }else{
+                list.innerHTML='';
+            }
+        }
+    };
+    document.onclick=function(){
+        list.style.display='none';
+    }
+</script>
+</body>
+</html>

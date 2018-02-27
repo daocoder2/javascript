@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>jsonp-h5</title>
+    <link rel="stylesheet" type="text/css" href="jsonp-baidu.css">
+    <script type="text/javascript" src="jquery.js"></script>
+</head>
+<body>
+<div class="box" id="box">
+    <div class="con">
+        <input class="input" id="search">
+        <a target="_blank" id="btn" href="javascript:void 0;" class="search"></a>
+    </div>
+    <ul class="list" id="list"></ul>
+</div>
+<script>
+    // 跨域请求好像不支持c
+    function xhrRequest(url){
+        $.ajax({
+            type: "GET",
+            url: url,                                       // 访问的链接
+            dataType: "jsonp",                              // 数据格式设置为jsonp
+            jsonp: "callback",                              // Jquery生成验证参数的名称
+            success:function(data){                        // 成功的回调函数
+                console.log(data);
+            },
+            error: function(data){
+                console.log(data);
+            }
+        });
+    }
+    // data为返回的json对象
+    function testCb(data){
+        if(data){
+            var arr=data.s;
+            var html='';
+            for(var i=0,len=arr.length; i<len; i++){
+                html+="<li class='in'><a href='https://www.baidu.com/s?wd="+arr[i]+"' target='_blank' style='display:block'>"+arr[i]+ "</a></li>"
+            }
+            list.innerHTML=html;
+        }
+    }
+    function callback(data){
+        if(data){
+            var arr=data.s;
+            var html='';
+            for(var i=0,len=arr.length; i<len; i++){
+                html+="<li class='in'><a href='https://www.baidu.com/s?wd="+arr[i]+"' target='_blank' style='display:block'>"+arr[i]+ "</a></li>"
+            }
+            list.innerHTML=html;
+        }
+    }
+    var search=document.getElementById('search');
+    var btn=document.getElementById('btn');
+    var list=document.getElementById('list');
+    search.onkeyup=function(e){
+        e=e || event;
+        if(e.keyCode=='13'){
+            window.open('https://www.baidu.com/s?wd='+this.value);
+        }
+        if(this.value){
+            if(search.data!=this.value){
+                btn.setAttribute('href', 'https://www.baidu.com/s?wd='+this.value);
+                var that=this;
+                xhrRequest("https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?wd="+that.value+"&&cb=testCb");
+                // xhrRequest("https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?wd="+that.value);
+            }
+        }else{
+            list.innerHTML='';
+        }
+        search.data=this.value;
+    };
+    search.onclick=function(e){
+        e=e || event;
+        list.style.display='block';
+        if(e.stopPropagation){
+            e.stopPropagation();
+        }else{
+            e.cancelBubble=true;
+        }
+    };
+    document.onclick=function(){
+        list.style.display='none';
+    }
+</script>
+</body>
+</html>
